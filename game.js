@@ -46,8 +46,8 @@ const bestScoreEl = document.getElementById('bestScore');
 const restartBtn = document.getElementById('restartBtn');
 
 // Game constants
-const GRAVITY = 0.5;
-const FLAP_STRENGTH = -8;
+const GRAVITY = 0.3;
+const FLAP_STRENGTH = -6;
 const PIPE_WIDTH = 60;
 const PIPE_GAP = 150;
 const PIPE_SPEED = 3;
