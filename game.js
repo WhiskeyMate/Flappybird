@@ -11,19 +11,15 @@ function resizeCanvas() {
     const maxWidth = window.innerWidth;
     const maxHeight = window.innerHeight;
     const aspectRatio = BASE_WIDTH / BASE_HEIGHT;
+    const padding = 40; // Small padding around edges
 
-    let newWidth = maxWidth;
-    let newHeight = newWidth / aspectRatio;
+    let newHeight = maxHeight - padding;
+    let newWidth = newHeight * aspectRatio;
 
-    if (newHeight > maxHeight) {
-        newHeight = maxHeight;
-        newWidth = newHeight * aspectRatio;
-    }
-
-    // Cap at base dimensions for larger screens
-    if (newWidth > BASE_WIDTH) {
-        newWidth = BASE_WIDTH;
-        newHeight = BASE_HEIGHT;
+    // If width exceeds screen, constrain by width instead
+    if (newWidth > maxWidth - padding) {
+        newWidth = maxWidth - padding;
+        newHeight = newWidth / aspectRatio;
     }
 
     canvas.style.width = newWidth + 'px';
