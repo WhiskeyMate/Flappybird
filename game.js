@@ -2,6 +2,41 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Base dimensions (used for scaling)
+const BASE_WIDTH = 400;
+const BASE_HEIGHT = 600;
+
+// Resize canvas to fit screen while maintaining aspect ratio
+function resizeCanvas() {
+    const maxWidth = window.innerWidth;
+    const maxHeight = window.innerHeight;
+    const aspectRatio = BASE_WIDTH / BASE_HEIGHT;
+
+    let newWidth = maxWidth;
+    let newHeight = newWidth / aspectRatio;
+
+    if (newHeight > maxHeight) {
+        newHeight = maxHeight;
+        newWidth = newHeight * aspectRatio;
+    }
+
+    // Cap at base dimensions for larger screens
+    if (newWidth > BASE_WIDTH) {
+        newWidth = BASE_WIDTH;
+        newHeight = BASE_HEIGHT;
+    }
+
+    canvas.style.width = newWidth + 'px';
+    canvas.style.height = newHeight + 'px';
+}
+
+// Initial resize and listen for orientation/resize changes
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', () => {
+    setTimeout(resizeCanvas, 100);
+});
+
 // UI Elements
 const startScreen = document.getElementById('startScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
@@ -305,8 +340,16 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Event listeners
+// Event listeners - Mouse/Click
 canvas.addEventListener('click', flap);
+
+// Event listeners - Touch (mobile)
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    flap();
+}, { passive: false });
+
+// Event listeners - Keyboard
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
         e.preventDefault();
@@ -314,17 +357,36 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-restartBtn.addEventListener('click', () => {
+// Restart button - supports both click and touch
+restartBtn.addEventListener('click', (e) => {
+    e.preventDefault();
     gameOverScreen.classList.add('hidden');
     gameState = 'playing';
     resetGame();
 });
+
+restartBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    gameOverScreen.classList.add('hidden');
+    gameState = 'playing';
+    resetGame();
+}, { passive: false });
+
+// Prevent default touch behaviors on game container
+document.querySelector('.game-container').addEventListener('touchmove', (e) => {
+    e.preventDefault();
+}, { passive: false });
 
 // Prevent spacebar scrolling
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
         e.preventDefault();
     }
+});
+
+// Prevent context menu on long press
+canvas.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
 });
 
 // Start the game loop
