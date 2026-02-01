@@ -38,6 +38,8 @@ body {
     touch-action: none;
     max-width: 100vw;
     max-height: 100vh;
+    cursor: pointer;
+    -webkit-touch-callout: none;
 }
 
 .overlay {
@@ -54,6 +56,9 @@ body {
     color: white;
     text-align: center;
     padding: 20px;
+    cursor: pointer;
+    touch-action: none;
+    -webkit-touch-callout: none;
 }
 
 .overlay h1 {
@@ -101,6 +106,8 @@ body {
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     font-weight: bold;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
 }
 
 #restartBtn:hover {

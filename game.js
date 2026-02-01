@@ -340,14 +340,27 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Event listeners - Mouse/Click
-canvas.addEventListener('click', flap);
-
-// Event listeners - Touch (mobile)
-canvas.addEventListener('touchstart', (e) => {
+// Unified input handler for both mouse and touch
+function handleInput(e) {
     e.preventDefault();
+    e.stopPropagation();
     flap();
+}
+
+// Event listeners - Mouse/Click on canvas
+canvas.addEventListener('click', handleInput);
+canvas.addEventListener('mousedown', handleInput);
+
+// Event listeners - Touch on canvas (iOS compatible)
+canvas.addEventListener('touchstart', handleInput, { passive: false });
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 }, { passive: false });
+
+// Touch/click on start screen overlay
+startScreen.addEventListener('click', handleInput);
+startScreen.addEventListener('touchstart', handleInput, { passive: false });
 
 // Event listeners - Keyboard
 document.addEventListener('keydown', (e) => {
@@ -357,23 +370,22 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Restart button - supports both click and touch
-restartBtn.addEventListener('click', (e) => {
+// Restart function
+function restartGame(e) {
     e.preventDefault();
+    e.stopPropagation();
     gameOverScreen.classList.add('hidden');
     gameState = 'playing';
     resetGame();
-});
+}
 
-restartBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    gameOverScreen.classList.add('hidden');
-    gameState = 'playing';
-    resetGame();
-}, { passive: false });
+// Restart button - supports both click and touch
+restartBtn.addEventListener('click', restartGame);
+restartBtn.addEventListener('touchstart', restartGame, { passive: false });
 
 // Prevent default touch behaviors on game container
-document.querySelector('.game-container').addEventListener('touchmove', (e) => {
+const gameContainer = document.querySelector('.game-container');
+gameContainer.addEventListener('touchmove', (e) => {
     e.preventDefault();
 }, { passive: false });
 
@@ -387,6 +399,11 @@ window.addEventListener('keydown', (e) => {
 // Prevent context menu on long press
 canvas.addEventListener('contextmenu', (e) => {
     e.preventDefault();
+});
+
+// Prevent default behaviors on all game elements for iOS
+[canvas, startScreen, gameOverScreen, gameContainer].forEach(el => {
+    el.addEventListener('touchforcechange', (e) => e.preventDefault(), { passive: false });
 });
 
 // Start the game loop
